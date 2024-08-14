@@ -120,6 +120,24 @@ else:
         # Remplacer les NaN par des chaînes vides pour un affichage plus propre
         df.fillna('', inplace=True)
 
+        # Graphiques en camembert côte à côte
+        st.subheader("Répartition des Dangers et Matrices")
+        col1, col2 = st.columns(2)
+
+        with col1:
+            if 'Danger' in df.columns:
+                danger_counts = df['Danger'].value_counts().nlargest(10)  # Les 10 principales occurrences
+                fig1 = px.pie(danger_counts, names=danger_counts.index, values=danger_counts.values, title="Top 10 des Dangers")
+                fig1.update_layout(margin=dict(t=0, b=0, l=0, r=0))
+                st.plotly_chart(fig1, use_container_width=True)
+
+        with col2:
+            if matrice_col in df.columns:
+                matrice_counts = df[matrice_col].value_counts().nlargest(10)  # Les 10 principales occurrences
+                fig2 = px.pie(matrice_counts, names=matrice_counts.index, values=matrice_counts.values, title="Top 10 des Matrices")
+                fig2.update_layout(margin=dict(t=0, b=0, l=0, r=0))
+                st.plotly_chart(fig2, use_container_width=True)
+
         # Rendre les liens cliquables
         def make_clickable(val, text):
             if pd.notna(val) and val != '':
@@ -130,5 +148,8 @@ else:
         df['Lien2'] = df['Lien2'].apply(lambda x: make_clickable(x, 'Lien2'))
 
         # Affichage du DataFrame avec possibilité de tri et filtrage
+        st.dataframe(df)
+
+        # Affichage du tableau formaté avec liens
         st.markdown(df.to_html(escape=False, index=False), unsafe_allow_html=True)
 
