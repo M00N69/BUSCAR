@@ -103,10 +103,11 @@ else:
         if matrices:
             df = df[df[matrice_col].isin(matrices)]
 
-        # Appliquer le filtre par mots-clés
+        # Appliquer le filtre par mots-clés sur des colonnes spécifiques
         if keywords:
-            keyword_list = [kw.strip() for kw in keywords.split(',')]
-            df = df[df.apply(lambda row: any(kw.lower() in row.astype(str).str.lower().values for kw in keyword_list), axis=1)]
+            keyword_list = [kw.strip().lower() for kw in keywords.split(',')]
+            cols_to_search = ['Titre', 'Texte', 'Danger', 'Matrice (catégories)']  # Limiter à certaines colonnes
+            df = df[df[cols_to_search].apply(lambda row: row.astype(str).str.lower().apply(lambda x: any(kw in x for kw in keyword_list)).any(), axis=1)]
 
         # Graphiques en camembert côte à côte
         st.subheader("Répartition des Dangers et Matrices")
