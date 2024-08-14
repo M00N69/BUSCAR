@@ -24,7 +24,7 @@ st.markdown(
 )
 
 # Titre principal
-st.title(" Veille Sanitaire Bulletin BUSCA , liste das bulletins")
+st.title(" Veille Sanitaire Bulletin BUSCA , liste des bulletins")
 
 # Fonction pour charger les données depuis l'URL
 @st.cache_data
@@ -51,7 +51,7 @@ else:
 
     # Menu latéral pour les filtres
     with st.sidebar:
-        st.header("Filtres")
+        st.header("Filtres(utiliser la flèche en haut pour fermer ce volet)")
 
         # Filtrage par plage de dates
         date_col = 'Date'  # Remplacez par le nom de la colonne des dates
