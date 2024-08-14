@@ -17,6 +17,11 @@ st.markdown(
         padding: 50px;
         text-align: center;
     }
+    .dataframe thead th {
+        background-color: #4CAF50; /* Green */
+        color: white;
+        font-weight: bold;
+    }
     </style>
     <div class="banner"></div>
     """,
@@ -24,7 +29,7 @@ st.markdown(
 )
 
 # Titre principal
-st.title(" Veille Sanitaire Bulletin BUSCA , liste des bulletins")
+st.title("Statistiques des Risques de Veille Sanitaire")
 
 # Fonction pour charger les données depuis l'URL
 @st.cache_data
@@ -51,7 +56,7 @@ else:
 
     # Menu latéral pour les filtres
     with st.sidebar:
-        st.header("Filtres    (utiliser la flèche en haut pour fermer ce volet)")
+        st.header("Filtres")
 
         # Filtrage par plage de dates
         date_col = 'Date'  # Remplacez par le nom de la colonne des dates
@@ -113,6 +118,9 @@ else:
             cols_to_search = ['Titre', 'Texte', 'Danger', 'Matrice (catégories)']  # Limiter à certaines colonnes
             df = df[df[cols_to_search].apply(lambda row: row.astype(str).str.lower().apply(lambda x: any(kw in x for kw in keyword_list)).any(), axis=1)]
 
+        # Remplacer les NaN par des chaînes vides pour un affichage plus propre
+        df.fillna('', inplace=True)
+
         # Graphiques en camembert côte à côte
         st.subheader("Répartition des Dangers et Matrices")
         col1, col2 = st.columns(2)
@@ -133,7 +141,6 @@ else:
 
         # Affichage du DataFrame avec liens cliquables et ajustement des cellules
         st.subheader("Données Filtrées")
-        df_display = df.copy()
 
         # Rendre les liens cliquables
         def make_clickable(val, text):
@@ -141,9 +148,17 @@ else:
                 return f'<a target="_blank" href="{val}">{text}</a>'
             return val
 
-        df_display['Lien'] = df_display['Lien'].apply(lambda x: make_clickable(x, 'Lien1'))
-        df_display['Lien2'] = df_display['Lien2'].apply(lambda x: make_clickable(x, 'Lien2'))
+        df['Lien'] = df['Lien'].apply(lambda x: make_clickable(x, 'Lien1'))
+        df['Lien2'] = df['Lien2'].apply(lambda x: make_clickable(x, 'Lien2'))
 
-        # Affichage du tableau avec ajustement des tailles
-        st.write(df_display.to_html(escape=False, index=False), unsafe_allow_html=True)
+        # Utiliser st.dataframe pour permettre le tri et le filtrage
+        st.dataframe(df.style.set_properties(**{
+            'text-align': 'left',
+            'white-space': 'pre-wrap',
+        }).set_table_styles({
+            'header': {
+                'selector': 'th',
+                'props': 'background-color: #4CAF50; color: white;'
+            }
+        }), use_container_width=True)
 
