@@ -17,11 +17,6 @@ st.markdown(
         padding: 50px;
         text-align: center;
     }
-    .dataframe thead th {
-        background-color: #4CAF50; /* Green */
-        color: white;
-        font-weight: bold;
-    }
     </style>
     <div class="banner"></div>
     """,
@@ -82,7 +77,7 @@ else:
             sections = st.multiselect("Sélectionner les sections", options=df[section_col].unique())
 
         if type_col in df.columns:
-            types = st.multiselect("Sélectionner les types", options=df[type_col].unique())
+            types = st.multiselect("Sélectionner les types", options[df[type_col].unique()])
 
         if matrice_col in df.columns:
             matrices = st.multiselect("Sélectionner les matrices", options=df[matrice_col].unique())
@@ -151,14 +146,6 @@ else:
         df['Lien'] = df['Lien'].apply(lambda x: make_clickable(x, 'Lien1'))
         df['Lien2'] = df['Lien2'].apply(lambda x: make_clickable(x, 'Lien2'))
 
-        # Utiliser st.dataframe pour permettre le tri et le filtrage
-        st.dataframe(df.style.set_properties(**{
-            'text-align': 'left',
-            'white-space': 'pre-wrap',
-        }).set_table_styles({
-            'header': {
-                'selector': 'th',
-                'props': 'background-color: #4CAF50; color: white;'
-            }
-        }), use_container_width=True)
+        # Affichage du DataFrame avec possibilité de tri et filtrage
+        st.dataframe(df)
 
