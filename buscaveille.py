@@ -56,17 +56,13 @@ else:
             max_date = df[date_col].max()
             start_date, end_date = st.date_input("Sélectionner une plage de dates", [min_date, max_date])
 
-            df = df[(df[date_col] >= start_date) & (df[date_col] <= end_date)]
-
         # Filtrage par pays
         country_col = 'Pays'  # Remplacez par le nom de la colonne des pays
         if country_col in df.columns:
             countries = st.multiselect(
                 "Sélectionner les pays",
-                options=df[country_col].unique(),
-                default=df[country_col].unique()
+                options=df[country_col].unique()
             )
-            df = df[df[country_col].isin(countries)]
 
         # Filtrage par section, type, matrice
         section_col = 'Section'
@@ -75,57 +71,74 @@ else:
 
         if section_col in df.columns:
             sections = st.multiselect("Sélectionner les sections", options=df[section_col].unique())
-            if sections:
-                df = df[df[section_col].isin(sections)]
 
         if type_col in df.columns:
             types = st.multiselect("Sélectionner les types", options=df[type_col].unique())
-            if types:
-                df = df[df[type_col].isin(types)]
 
         if matrice_col in df.columns:
             matrices = st.multiselect("Sélectionner les matrices", options=df[matrice_col].unique())
-            if matrices:
-                df = df[df[matrice_col].isin(matrices)]
 
         # Amélioration de la recherche par mots-clés
         keywords = st.text_area("Recherche par mots-clés (séparés par des virgules)")
-        if st.button("Appliquer le filtre"):
-            if keywords:
-                keyword_list = [kw.strip() for kw in keywords.split(',')]
-                df = df[df.apply(lambda row: any(kw.lower() in row.astype(str).str.lower().values for kw in keyword_list), axis=1)]
 
-    # Graphiques en camembert côte à côte
-    st.subheader("Répartition des Dangers et Matrices")
-    col1, col2 = st.columns(2)
+        # Bouton pour appliquer les filtres
+        apply_filter = st.button("Appliquer les filtres")
 
-    with col1:
-        if 'Danger' in df.columns:
-            danger_counts = df['Danger'].value_counts().nlargest(10)  # Les 10 principales occurrences
-            fig1 = px.pie(danger_counts, names=danger_counts.index, values=danger_counts.values, title="Top 10 des Dangers")
-            fig1.update_layout(margin=dict(t=0, b=0, l=0, r=0))
-            st.plotly_chart(fig1, use_container_width=True)
+    if apply_filter:
+        # Appliquer les filtres de dates
+        if date_col in df.columns:
+            df = df[(df[date_col] >= pd.to_datetime(start_date)) & (df[date_col] <= pd.to_datetime(end_date))]
 
-    with col2:
-        if matrice_col in df.columns:
-            matrice_counts = df[matrice_col].value_counts().nlargest(10)  # Les 10 principales occurrences
-            fig2 = px.pie(matrice_counts, names=matrice_counts.index, values=matrice_counts.values, title="Top 10 des Matrices")
-            fig2.update_layout(margin=dict(t=0, b=0, l=0, r=0))
-            st.plotly_chart(fig2, use_container_width=True)
+        # Appliquer les filtres de pays
+        if countries:
+            df = df[df[country_col].isin(countries)]
 
-    # Affichage du DataFrame avec liens cliquables et ajustement des cellules
-    st.subheader("Données Filtrées")
-    df_display = df.copy()
+        # Appliquer les filtres de section, type, matrice
+        if sections:
+            df = df[df[section_col].isin(sections)]
 
-    # Rendre les liens cliquables
-    def make_clickable(val, text):
-        if pd.notna(val):
-            return f'<a target="_blank" href="{val}">{text}</a>'
-        return val
+        if types:
+            df = df[df[type_col].isin(types)]
 
-    df_display['Lien'] = df_display['Lien'].apply(lambda x: make_clickable(x, 'Lien1'))
-    df_display['Lien2'] = df_display['Lien2'].apply(lambda x: make_clickable(x, 'Lien2'))
+        if matrices:
+            df = df[df[matrice_col].isin(matrices)]
 
-    # Affichage du tableau avec ajustement des tailles
-    st.write(df_display.to_html(escape=False, index=False), unsafe_allow_html=True)
+        # Appliquer le filtre par mots-clés
+        if keywords:
+            keyword_list = [kw.strip() for kw in keywords.split(',')]
+            df = df[df.apply(lambda row: any(kw.lower() in row.astype(str).str.lower().values for kw in keyword_list), axis=1)]
+
+        # Graphiques en camembert côte à côte
+        st.subheader("Répartition des Dangers et Matrices")
+        col1, col2 = st.columns(2)
+
+        with col1:
+            if 'Danger' in df.columns:
+                danger_counts = df['Danger'].value_counts().nlargest(10)  # Les 10 principales occurrences
+                fig1 = px.pie(danger_counts, names=danger_counts.index, values=danger_counts.values, title="Top 10 des Dangers")
+                fig1.update_layout(margin=dict(t=0, b=0, l=0, r=0))
+                st.plotly_chart(fig1, use_container_width=True)
+
+        with col2:
+            if matrice_col in df.columns:
+                matrice_counts = df[matrice_col].value_counts().nlargest(10)  # Les 10 principales occurrences
+                fig2 = px.pie(matrice_counts, names=matrice_counts.index, values=matrice_counts.values, title="Top 10 des Matrices")
+                fig2.update_layout(margin=dict(t=0, b=0, l=0, r=0))
+                st.plotly_chart(fig2, use_container_width=True)
+
+        # Affichage du DataFrame avec liens cliquables et ajustement des cellules
+        st.subheader("Données Filtrées")
+        df_display = df.copy()
+
+        # Rendre les liens cliquables
+        def make_clickable(val, text):
+            if pd.notna(val):
+                return f'<a target="_blank" href="{val}">{text}</a>'
+            return val
+
+        df_display['Lien'] = df_display['Lien'].apply(lambda x: make_clickable(x, 'Lien1'))
+        df_display['Lien2'] = df_display['Lien2'].apply(lambda x: make_clickable(x, 'Lien2'))
+
+        # Affichage du tableau avec ajustement des tailles
+        st.write(df_display.to_html(escape=False, index=False), unsafe_allow_html=True)
 
