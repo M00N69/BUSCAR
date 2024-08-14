@@ -93,31 +93,37 @@ else:
         keyword_list = [kw.strip() for kw in keywords.split(',')]
         df = df[df.apply(lambda row: any(kw.lower() in row.astype(str).str.lower().values for kw in keyword_list), axis=1)]
 
-    # Graphiques en camembert
-    st.subheader("Répartition des Dangers")
-    if 'Danger' in df.columns:
-        danger_counts = df['Danger'].value_counts()
-        fig1 = px.pie(danger_counts, names=danger_counts.index, values=danger_counts.values, title="Répartition des Dangers")
-        st.plotly_chart(fig1)
+    # Graphiques en camembert côte à côte
+    st.subheader("Répartition des Dangers et Matrices")
+    col1, col2 = st.columns(2)
 
-    st.subheader("Répartition des Matrices")
-    if matrice_col in df.columns:
-        matrice_counts = df[matrice_col].value_counts()
-        fig2 = px.pie(matrice_counts, names=matrice_counts.index, values=matrice_counts.values, title="Répartition des Matrices")
-        st.plotly_chart(fig2)
+    with col1:
+        if 'Danger' in df.columns:
+            danger_counts = df['Danger'].value_counts()
+            fig1 = px.pie(danger_counts, names=danger_counts.index, values=danger_counts.values, title="Répartition des Dangers")
+            fig1.update_layout(margin=dict(t=0, b=0, l=0, r=0))
+            st.plotly_chart(fig1, use_container_width=True)
 
-    # Affichage du DataFrame avec liens cliquables
+    with col2:
+        if matrice_col in df.columns:
+            matrice_counts = df[matrice_col].value_counts()
+            fig2 = px.pie(matrice_counts, names=matrice_counts.index, values=matrice_counts.values, title="Répartition des Matrices")
+            fig2.update_layout(margin=dict(t=0, b=0, l=0, r=0))
+            st.plotly_chart(fig2, use_container_width=True)
+
+    # Affichage du DataFrame avec liens cliquables et ajustement des cellules
     st.subheader("Données Filtrées")
     df_display = df.copy()
 
     # Rendre les liens cliquables
-    def make_clickable(val):
+    def make_clickable(val, text):
         if pd.notna(val):
-            return f'<a target="_blank" href="{val}">{val}</a>'
+            return f'<a target="_blank" href="{val}">{text}</a>'
         return val
 
-    df_display['Lien'] = df_display['Lien'].apply(make_clickable)
-    df_display['Lien2'] = df_display['Lien2'].apply(make_clickable)
+    df_display['Lien'] = df_display['Lien'].apply(lambda x: make_clickable(x, 'Lien1'))
+    df_display['Lien2'] = df_display['Lien2'].apply(lambda x: make_clickable(x, 'Lien2'))
 
+    # Affichage du tableau avec ajustement des tailles
     st.write(df_display.to_html(escape=False, index=False), unsafe_allow_html=True)
 
