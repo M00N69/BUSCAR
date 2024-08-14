@@ -51,7 +51,7 @@ else:
 
     # Menu latéral pour les filtres
     with st.sidebar:
-        st.header("Filtres(utiliser la flèche en haut pour fermer ce volet)")
+        st.header("Filtres    (utiliser la flèche en haut pour fermer ce volet)")
 
         # Filtrage par plage de dates
         date_col = 'Date'  # Remplacez par le nom de la colonne des dates
