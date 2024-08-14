@@ -77,7 +77,7 @@ else:
             sections = st.multiselect("Sélectionner les sections", options=df[section_col].unique())
 
         if type_col in df.columns:
-            types = st.multiselect("Sélectionner les types", options[df[type_col].unique()])
+            types = st.multiselect("Sélectionner les types", options=df[type_col].unique())
 
         if matrice_col in df.columns:
             matrices = st.multiselect("Sélectionner les matrices", options=df[matrice_col].unique())
