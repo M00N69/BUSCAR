@@ -90,13 +90,10 @@ else:
 
         # Amélioration de la recherche par mots-clés
         keywords = st.text_area("Recherche par mots-clés (séparés par des virgules)")
-        apply_filter = st.button("Appliquer le filtre")
-
-        if apply_filter:
+        if st.button("Appliquer le filtre"):
             if keywords:
                 keyword_list = [kw.strip() for kw in keywords.split(',')]
                 df = df[df.apply(lambda row: any(kw.lower() in row.astype(str).str.lower().values for kw in keyword_list), axis=1)]
-            st.experimental_rerun()
 
     # Graphiques en camembert côte à côte
     st.subheader("Répartition des Dangers et Matrices")
