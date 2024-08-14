@@ -45,6 +45,10 @@ df = load_data()
 if df.empty:
     st.write("Impossible de charger les données.")
 else:
+    # Initialiser les variables pour éviter les erreurs NameError
+    countries, sections, types, matrices = [], [], [], []
+    start_date, end_date = None, None
+
     # Menu latéral pour les filtres
     with st.sidebar:
         st.header("Filtres")
@@ -86,7 +90,7 @@ else:
 
     if apply_filter:
         # Appliquer les filtres de dates
-        if date_col in df.columns:
+        if start_date and end_date and date_col in df.columns:
             df = df[(df[date_col] >= pd.to_datetime(start_date)) & (df[date_col] <= pd.to_datetime(end_date))]
 
         # Appliquer les filtres de pays
