@@ -1,1 +1,26 @@
- 
+import streamlit as st
+import pandas as pd
+import requests
+from io import BytesIO
+
+st.title("Chargement des Données")
+
+@st.cache_data
+def load_data():
+    file_url = "https://www.plateforme-sca.fr/media/11/download"
+    try:
+        response = requests.get(file_url)
+        response.raise_for_status()
+        df = pd.read_excel(BytesIO(response.content), engine='openpyxl')
+        return df
+    except Exception as e:
+        st.error(f"Erreur lors du chargement des données : {e}")
+        return pd.DataFrame()
+
+df = load_data()
+
+if df.empty:
+    st.write("Impossible de charger les données.")
+else:
+    st.write("Les données ont été chargées avec succès !")
+    st.dataframe(df.head())
