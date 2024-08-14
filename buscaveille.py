@@ -24,4 +24,3 @@ if not df.empty:
     st.dataframe(df.head())
 else:
     st.write("Impossible de charger les données.")
-
