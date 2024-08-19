@@ -51,18 +51,23 @@ if df.empty:
 else:
     # Initialiser les variables pour éviter les erreurs NameError
     countries, sections, types, matrices = [], [], [], []
-    start_date, end_date = None, None
+    busca_min, busca_max = None, None
 
     # Menu latéral pour les filtres
     with st.sidebar:
         st.header("Filtres")
 
-        # Filtrage par plage de dates
-        date_col = 'Date'  # Remplacez par le nom de la colonne des dates
-        if date_col in df.columns:
-            min_date = df[date_col].min()
-            max_date = df[date_col].max()
-            start_date, end_date = st.date_input("Sélectionner une plage de dates", [min_date, max_date])
+        # Filtrage par numéro de BuSCA
+        busca_col = 'BuSCA'  # Nom exact de la colonne
+        if busca_col in df.columns:
+            busca_min = int(df[busca_col].min())
+            busca_max = int(df[busca_col].max())
+            busca_range = st.slider(
+                "Sélectionner une plage de numéros de BuSCA",
+                min_value=busca_min,
+                max_value=busca_max,
+                value=(busca_min, busca_max)
+            )
 
         # Filtrage par pays
         country_col = 'Pays'  # Remplacez par le nom de la colonne des pays
@@ -93,9 +98,9 @@ else:
         apply_filter = st.button("Appliquer les filtres")
 
     if apply_filter:
-        # Appliquer les filtres de dates
-        if start_date and end_date and date_col in df.columns:
-            df = df[(df[date_col] >= pd.to_datetime(start_date)) & (df[date_col] <= pd.to_datetime(end_date))]
+        # Appliquer les filtres de numéro de BuSCA
+        if busca_range and busca_col in df.columns:
+            df = df[(df[busca_col] >= busca_range[0]) & (df[busca_col] <= busca_range[1])]
 
         # Appliquer les filtres de pays
         if countries:
@@ -152,4 +157,3 @@ else:
 
         # Affichage du tableau formaté avec liens
         st.markdown(df.to_html(escape=False, index=False), unsafe_allow_html=True)
-
