@@ -49,8 +49,12 @@ df = load_data()
 if df.empty:
     st.write("Impossible de charger les données.")
 else:
+    # Supprimer les colonnes "Section" et "Type" pour gagner de l'espace
+    columns_to_drop = ["Section", "Type"]
+    df = df.drop(columns=columns_to_drop, errors='ignore')
+
     # Initialiser les variables pour éviter les erreurs NameError
-    countries, sections, types, matrices = [], [], [], []
+    countries, matrices = [], []
     busca_min, busca_max = None, None
 
     # Menu latéral pour les filtres
@@ -77,16 +81,8 @@ else:
                 options=df[country_col].unique()
             )
 
-        # Filtrage par section, type, matrice
-        section_col = 'Section'
-        type_col = 'Type'
+        # Filtrage par matrice
         matrice_col = 'Matrice (catégories)'
-
-        if section_col in df.columns:
-            sections = st.multiselect("Sélectionner les sections", options=df[section_col].unique())
-
-        if type_col in df.columns:
-            types = st.multiselect("Sélectionner les types", options=df[type_col].unique())
 
         if matrice_col in df.columns:
             matrices = st.multiselect("Sélectionner les matrices", options=df[matrice_col].unique())
@@ -106,13 +102,7 @@ else:
         if countries:
             df = df[df[country_col].isin(countries)]
 
-        # Appliquer les filtres de section, type, matrice
-        if sections:
-            df = df[df[section_col].isin(sections)]
-
-        if types:
-            df = df[df[type_col].isin(types)]
-
+        # Appliquer les filtres de matrice
         if matrices:
             df = df[df[matrice_col].isin(matrices)]
 
