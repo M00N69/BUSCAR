@@ -31,6 +31,42 @@ st.markdown(
 # Titre principal
 st.title(" Veille Sanitaire SCA, Surveillance de la Chaine Alimentaire: BuSCA")
 
+# Dropdown section to explain the application
+with st.expander("À propos de cette application"):
+    st.write("""
+    ### Fonctionnement de l'Application
+
+    Cette application est conçue pour vous aider à explorer et analyser les données sur les risques sanitaires provenant des bulletins BuSCA.
+    Vous disposez d'une interface simple pour filtrer et visualiser ces données de manière interactive.
+
+    #### Source des Données
+    L'application va chercher automatiquement la dernière version de la base de données BuSCA à chaque utilisation.
+    Les données proviennent directement de la plateforme BuSCA, accessible via le lien suivant : [Le Dernier BuSCA](https://www.plateforme-sca.fr/le-dernier-busca).
+    Cela garantit que vous travaillez toujours avec les informations les plus récentes disponibles.
+
+    #### Fonctionnalités de Filtrage
+    Vous pouvez filtrer les données selon plusieurs critères :
+    
+    - **Plage de numéros de BuSCA :** Filtrez les bulletins par leur numéro pour restreindre les résultats à une plage spécifique.
+    - **Matrices :** Filtrez par catégories de matrices, permettant d'affiner l'analyse sur des types spécifiques de données.
+    - **Danger :** Filtrez les résultats selon les types de dangers identifiés dans les bulletins.
+    - **Section :** Sélectionnez les sections spécifiques pour filtrer les données selon les catégories définies par BuSCA.
+    - **Mots-clés :** Recherchez des termes spécifiques à travers plusieurs colonnes clés. Cela vous permet de cibler des informations précises dans le texte des bulletins.
+
+    **Pourquoi les filtres peuvent sembler complexes :** Les filtres sont conçus en fonction de la structure et de la gestion interne de la base de données BuSCA. Certaines catégories sont larges, ce qui reflète la richesse et la complexité des données traitées. Cela permet une grande flexibilité dans l'analyse, même si cela peut paraître complexe au premier abord.
+
+    **Astuce d'Utilisation :** Une fois que vous avez choisi vos filtres et cliqué sur le bouton "Appliquer les filtres", il est préférable de refermer la fenêtre latérale pour profiter d'une meilleure visibilité des résultats.
+
+    #### Visualisation des Données
+
+    - **Tableau des Données (DataFrame) :** Les résultats filtrés sont présentés dans un tableau interactif. Vous pouvez trier et filtrer directement dans ce tableau pour une exploration plus approfondie.
+    - **Graphiques en Camembert :** Deux graphiques circulaires vous montrent les 10 principales occurrences des dangers et des matrices. Cela vous donne un aperçu visuel rapide des tendances principales dans les données.
+    - **Liens Cliquables :** Les colonnes contenant des liens sont formatées pour que vous puissiez cliquer directement et accéder aux ressources externes pertinentes. Cela inclut des liens vers des documents ou des pages web spécifiques mentionnés dans les bulletins.
+
+    Cette application est conçue pour être intuitive, même si les filtres peuvent parfois paraître détaillés. N'hésitez pas à explorer les différentes options pour mieux comprendre les données de BuSCA.
+    """)
+
+
 # Fonction pour charger les données depuis l'URL
 @st.cache_data
 def load_data():
