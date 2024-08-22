@@ -54,6 +54,11 @@ else:
     columns_to_drop = ["Section", "Type"]
     df = df.drop(columns=columns_to_drop, errors='ignore')
 
+    # Initialiser les variables pour éviter les erreurs NameError
+    countries, matrices = [], []
+    busca_range = None
+    keywords = ""
+
     # Menu latéral pour les filtres
     with st.sidebar:
         st.header("Filtres")
@@ -83,15 +88,13 @@ else:
         if matrice_col in df.columns:
             matrices = st.multiselect("Sélectionner les matrices", options=df[matrice_col].unique())
 
-        # Amélioration de la recherche par mots-clés
+        # Recherche par mots-clés
         keywords = st.text_area("Recherche par mots-clés (séparés par des virgules)")
 
-        # Appliquer les filtres automatiquement quand les mots-clés changent
-        st.session_state['apply_filter'] = st.session_state.get('apply_filter', False)
-        if st.session_state['apply_filter'] or keywords:
-            st.session_state['apply_filter'] = True
+        # Bouton pour appliquer les filtres
+        apply_filter = st.button("Appliquer les filtres")
 
-    if st.session_state['apply_filter']:
+    if apply_filter:
         # Appliquer les filtres de numéro de BuSCA
         if busca_range and busca_col in df.columns:
             df = df[(df[busca_col] >= busca_range[0]) & (df[busca_col] <= busca_range[1])]
