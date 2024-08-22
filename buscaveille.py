@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 from io import BytesIO
 import plotly.express as px
+import re
 
 # Configurer le mode wide
 st.set_page_config(layout="wide")
@@ -53,10 +54,6 @@ else:
     columns_to_drop = ["Section", "Type"]
     df = df.drop(columns=columns_to_drop, errors='ignore')
 
-    # Initialiser les variables pour éviter les erreurs NameError
-    countries, matrices = [], []
-    busca_min, busca_max = None, None
-
     # Menu latéral pour les filtres
     with st.sidebar:
         st.header("Filtres")
@@ -83,17 +80,18 @@ else:
 
         # Filtrage par matrice
         matrice_col = 'Matrice (catégories)'
-
         if matrice_col in df.columns:
             matrices = st.multiselect("Sélectionner les matrices", options=df[matrice_col].unique())
 
         # Amélioration de la recherche par mots-clés
         keywords = st.text_area("Recherche par mots-clés (séparés par des virgules)")
 
-        # Bouton pour appliquer les filtres
-        apply_filter = st.button("Appliquer les filtres")
+        # Appliquer les filtres automatiquement quand les mots-clés changent
+        st.session_state['apply_filter'] = st.session_state.get('apply_filter', False)
+        if st.session_state['apply_filter'] or keywords:
+            st.session_state['apply_filter'] = True
 
-    if apply_filter:
+    if st.session_state['apply_filter']:
         # Appliquer les filtres de numéro de BuSCA
         if busca_range and busca_col in df.columns:
             df = df[(df[busca_col] >= busca_range[0]) & (df[busca_col] <= busca_range[1])]
@@ -109,8 +107,13 @@ else:
         # Appliquer le filtre par mots-clés sur des colonnes spécifiques
         if keywords:
             keyword_list = [kw.strip().lower() for kw in keywords.split(',')]
+            keyword_patterns = [r'\b' + re.escape(kw) + r's?\b' for kw in keyword_list]  # Ajouter \b pour les bordures de mots et gérer le pluriel
+
+            def match_keywords(text, patterns):
+                return any(re.search(pattern, text) for pattern in patterns)
+
             cols_to_search = ['Titre', 'Texte', 'Danger', 'Matrice (catégories)']  # Limiter à certaines colonnes
-            df = df[df[cols_to_search].apply(lambda row: row.astype(str).str.lower().apply(lambda x: any(kw in x for kw in keyword_list)).any(), axis=1)]
+            df = df[df[cols_to_search].apply(lambda row: row.astype(str).str.lower().apply(lambda x: match_keywords(x, keyword_patterns)).any(), axis=1)]
 
         # Remplacer les NaN par des chaînes vides pour un affichage plus propre
         df.fillna('', inplace=True)
