@@ -31,7 +31,7 @@ st.markdown(
     .banner {
         background-image: url('https://github.com/M00N69/BUSCAR/blob/main/logo%2002%20copie.jpg?raw=true');
         background-size: cover;
-        padding: 35px; /* Reduced from 50px to 35px, approximately 30% less */
+        padding: 75px;
         text-align: center;
     }
     .dataframe td {
