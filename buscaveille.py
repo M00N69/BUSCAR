@@ -51,12 +51,12 @@ if df.empty:
     st.write("Impossible de charger les données.")
 else:
     # Supprimer les colonnes "Section" et "Type" pour gagner de l'espace
-    columns_to_drop = ["Section", "Type"]
+    columns_to_drop = ["Type"]
     df = df.drop(columns=columns_to_drop, errors='ignore')
 
     # Initialiser les variables pour éviter les erreurs NameError
     countries, matrices = [], []
-    busca_range = None
+    busca_range, dangers, sections = None, [], []
     keywords = ""
 
     # Menu latéral pour les filtres
@@ -88,6 +88,16 @@ else:
         if matrice_col in df.columns:
             matrices = st.multiselect("Sélectionner les matrices", options=df[matrice_col].unique())
 
+        # Filtrage par Danger
+        danger_col = 'Danger'
+        if danger_col in df.columns:
+            dangers = st.multiselect("Sélectionner les dangers", options=df[danger_col].unique())
+
+        # Filtrage par Section
+        section_col = 'Section'
+        if section_col in df.columns:
+            sections = st.multiselect("Sélectionner les sections", options=df[section_col].unique())
+
         # Recherche par mots-clés
         keywords = st.text_area("Recherche par mots-clés (séparés par des virgules)")
 
@@ -106,6 +116,14 @@ else:
         # Appliquer les filtres de matrice
         if matrices:
             df = df[df[matrice_col].isin(matrices)]
+
+        # Appliquer les filtres de Danger
+        if dangers:
+            df = df[df[danger_col].isin(dangers)]
+
+        # Appliquer les filtres de Section
+        if sections:
+            df = df[df[section_col].isin(sections)]
 
         # Appliquer le filtre par mots-clés sur des colonnes spécifiques
         if keywords:
@@ -126,8 +144,8 @@ else:
         col1, col2 = st.columns(2)
 
         with col1:
-            if 'Danger' in df.columns:
-                danger_counts = df['Danger'].value_counts().nlargest(10)  # Les 10 principales occurrences
+            if danger_col in df.columns:
+                danger_counts = df[danger_col].value_counts().nlargest(10)  # Les 10 principales occurrences
                 fig1 = px.pie(danger_counts, names=danger_counts.index, values=danger_counts.values, title="Top 10 des Dangers")
                 fig1.update_layout(margin=dict(t=0, b=0, l=0, r=0))
                 st.plotly_chart(fig1, use_container_width=True)
