@@ -29,7 +29,7 @@ st.markdown(
 )
 
 # Titre principal
-st.title("Statistiques des Risques de Veille Sanitaire : Bulletins BuSCA")
+st.title(" Veille Sanitaire, SCA, Surveillance de la Chaine Alimentaire : Bulletins BuSCA")
 
 # Fonction pour charger les données depuis l'URL
 @st.cache_data
