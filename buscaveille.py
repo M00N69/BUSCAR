@@ -8,6 +8,29 @@ import re
 # Configurer le mode wide
 st.set_page_config(layout="wide")
 
+# Custom CSS for changing sidebar background color
+st.markdown(
+    """
+    <style>
+    /* Sidebar background color */
+    [data-testid="stSidebar"] {
+        background-color: #add8e6; /* Light blue color */
+    }
+
+    /* Sidebar header text color (optional) */
+    [data-testid="stSidebar"] .css-1lcbmhc {
+        color: black;
+    }
+    
+    /* Sidebar widget text color (optional) */
+    [data-testid="stSidebar"] .css-17eq0hr {
+        color: black;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Bannière avec le logo
 st.markdown(
     """
