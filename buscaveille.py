@@ -84,7 +84,6 @@ with st.expander("À propos de cette application"):
 
 
 # Fonction pour charger les données depuis l'URL
-@st.cache_data
 def load_data():
     file_url = "https://www.plateforme-sca.fr/media/11/download"
     try:
@@ -96,8 +95,16 @@ def load_data():
         st.error(f"Erreur lors du chargement des données : {e}")
         return pd.DataFrame()
 
-# Charger les données
-df = load_data()
+# Ajouter un bouton pour recharger les données
+recharger_donnees = st.sidebar.button("Recharger les données")
+
+# Charger les données seulement si nécessaire
+if recharger_donnees:
+    # Force rechargement
+    df = load_data()
+else:
+    # Utiliser les données en cache
+    df = load_data()
 
 if df.empty:
     st.write("Impossible de charger les données.")
